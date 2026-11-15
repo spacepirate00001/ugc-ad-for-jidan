@@ -1,0 +1,302 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:PF;font-weight:500;src:url(fonts/playfair-display-latin-500-normal.woff2)}
+@font-face{font-family:PF;font-weight:700;src:url(fonts/playfair-display-latin-700-normal.woff2)}
+@font-face{font-family:PF;font-weight:500;font-style:italic;src:url(fonts/playfair-display-latin-500-italic.woff2)}
+@font-face{font-family:MS;font-weight:400;src:url(fonts/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:MS;font-weight:500;src:url(fonts/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:MS;font-weight:600;src:url(fonts/montserrat-latin-600-normal.woff2)}
+:root{--navy:#0a1428;--navy2:#13244a;--gold:#c9a86a;--gold2:#e6cf9c;--ivory:#f4efe5;--ink:#0d1a33}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy)}
+body{font-family:MS,sans-serif;color:var(--ivory)}
+.abs{position:absolute}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 38%,#1a3266 0%,#0f1f42 45%,#08112a 100%)}
+#bggrid{position:absolute;inset:-120px;opacity:.06;background-image:linear-gradient(#9cc3ff 1px,transparent 1px),linear-gradient(90deg,#9cc3ff 1px,transparent 1px);background-size:60px 60px}
+#gears{position:absolute;inset:0}
+#parts{position:absolute;inset:0}
+#world{position:absolute;inset:0}
+#grain{position:absolute;inset:-100px;background:url(img/grain.png);z-index:60;pointer-events:none;mix-blend-mode:overlay;opacity:.5}
+#vig{position:absolute;inset:0;z-index:59;box-shadow:inset 0 0 260px rgba(0,0,0,.6);pointer-events:none}
+#flash{position:absolute;inset:0;background:#fff3d6;z-index:58;opacity:0;pointer-events:none}
+.scene{position:absolute;inset:0;display:none}
+.serif{font-family:PF,serif}
+.label{font-family:MS;font-weight:500;font-size:26px;letter-spacing:.42em;color:var(--gold);text-transform:uppercase}
+.mask{overflow:hidden;display:block;padding:0 4px}
+.mask>*{display:block}
+.gold{color:var(--gold)}
+.hair{height:2px;background:linear-gradient(90deg,var(--gold),rgba(201,168,106,.15))}
+.hairc{height:2px;background:linear-gradient(90deg,rgba(201,168,106,0),var(--gold),rgba(201,168,106,0))}
+.p3{position:absolute;left:90px;top:390px;width:900px;height:620px}
+.panel{position:absolute;inset:0;overflow:hidden;background:#000}
+.frame{position:absolute;left:-24px;top:-24px;right:-24px;bottom:-24px;border:2px solid var(--gold)}
+.corner{position:absolute;width:56px;height:56px;border-color:var(--gold2);border-style:solid}
+.panel .ik{position:absolute;inset:0;overflow:hidden}
+.panel .im{position:absolute;inset:0;background-size:cover;background-position:center}
+.panel .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(5,12,30,.6))}
+.panel .fl{position:absolute;inset:0;background:#fff;opacity:0}
+.sheen{position:absolute;top:-20%;bottom:-20%;width:40%;left:-60%;background:linear-gradient(105deg,transparent 20%,rgba(255,240,205,.45) 50%,transparent 80%);transform:skewX(-12deg)}
+.tagc{position:absolute;left:0;bottom:0;background:var(--navy);color:var(--gold2);font:500 22px MS;letter-spacing:.3em;text-transform:uppercase;padding:12px 22px}
+.num{font-family:PF;font-weight:700;font-size:180px;line-height:1;color:transparent;-webkit-text-stroke:2px var(--gold)}
+.ttl{font-family:PF,serif;font-weight:700;font-size:60px;line-height:1.15;color:var(--ivory)}
+.ttlen{font-family:PF;font-style:italic;font-weight:500;font-size:34px;color:var(--gold2)}
+.li{font-family:MS;font-weight:500;font-size:36px;color:rgba(244,239,229,.9);display:flex;align-items:center;gap:22px;height:72px}
+.li i{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);flex:none}
+.wd{display:inline-block;white-space:nowrap}
+.ch{display:inline-block;transform-origin:50% 100%}
+#hdr{position:absolute;top:110px;left:90px;right:90px;display:flex;align-items:center;justify-content:space-between;z-index:40;opacity:0}
+#hdr img{height:56px}
+#hdr .nm{font:600 22px MS;letter-spacing:.32em;color:var(--ivory);margin-left:20px}
+#hdr .ix{font:500 24px MS;letter-spacing:.3em;color:var(--gold)}
+#prog{position:absolute;left:90px;right:90px;bottom:110px;height:2px;background:rgba(201,168,106,.2);z-index:40}
+#prog i{display:block;height:100%;width:0;background:var(--gold)}
+#wipe{position:absolute;inset:0;z-index:50;pointer-events:none;overflow:hidden}
+#wipe .bar{position:absolute;top:-10%;height:120%;width:170%;left:-35%;transform:skewX(-14deg)}
+#wipe .b1{background:var(--gold)} #wipe .b2{background:#1a2f5e} #wipe .b3{background:#08112a;display:flex;align-items:center;justify-content:center}
+#wipe .b3 img{width:260px;transform:skewX(14deg);opacity:.9}
+.ivory{position:absolute;inset:0;background:var(--ivory)}
+.stat{display:flex;align-items:baseline;gap:34px;padding:30px 0 26px;position:relative}
+.stat b{font-family:PF;font-weight:700;font-size:150px;color:var(--ink);line-height:1;min-width:330px}
+.stat>span{font-family:PF;font-weight:700;font-size:46px;color:var(--ink);line-height:1.2}
+.stat>span small{display:block;font:500 22px MS;letter-spacing:.3em;color:#9a7a3e;text-transform:uppercase;margin-top:10px}
+.stat .bl{position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#b8954f,rgba(184,149,79,.1));transform-origin:left}
+.node{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--gold);box-shadow:0 0 30px var(--gold)}
+.ring{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2px solid var(--gold)}
+.shock{position:absolute;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;border:6px solid var(--gold2);opacity:0}
+.city{font-family:PF;font-weight:700;font-size:64px;line-height:1.2}
+.addr{font-family:MS;font-weight:500;font-size:30px;color:rgba(244,239,229,.82);line-height:1.6}
+.addr em{font-style:normal;color:var(--gold);font-weight:500;font-size:22px;letter-spacing:.28em;margin-right:14px}
+.phone{font:600 74px MS;letter-spacing:.06em;color:var(--ivory)}
+.sweepwrap{position:absolute;-webkit-mask-image:url(img/logo.png);-webkit-mask-size:100% 100%;overflow:hidden}
+.sweep{position:absolute;top:0;bottom:0;width:60%;background:linear-gradient(100deg,transparent 20%,rgba(255,236,190,.95) 50%,transparent 80%)}
+.streak{position:absolute;height:3px;background:linear-gradient(90deg,transparent,#fff3d6 45%,#fff 50%,#fff3d6 55%,transparent);box-shadow:0 0 24px #e6cf9c}
+.dotg{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff6dd;box-shadow:0 0 30px 10px rgba(230,207,156,.8)}
+</style></head>
+<body>
+<div id="bg"></div><div id="bggrid"></div>
+<svg id="gears" width="1080" height="1920"></svg>
+<canvas id="parts" width="1080" height="1920"></canvas>
+<div id="world"><div id="stage"></div></div>
+<div id="hdr"><div style="display:flex;align-items:center"><img src="img/logo.png"><span class="nm">A.H.I ENGINEERING</span></div><span class="ix" id="ix"></span></div>
+<div id="prog"><i></i></div>
+<div id="wipe"><div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"><img src="img/logo.png"></div></div>
+<div id="flash"></div><div id="vig"></div><div id="grain"></div>
+<script>
+// ---------- helpers ----------
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>{x=cl(x);return x===1?1:1-Math.pow(2,-10*x)};
+const eio=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const eb=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const M=(inner,a,t,d)=>`<span class="mask"><span data-a="${a}" data-t="${t}" data-d="${d||0.8}">${inner}</span></span>`;
+function chars(text,t0,st=0.03,d=0.65){let i=0;return text.split(' ').map(w=>`<span class="wd">${[...w].map(c=>`<span class="ch" data-a="char" data-t="${(t0+(i++)*st).toFixed(3)}" data-d="${d}">${c.replace('&','&amp;')}</span>`).join('')}</span>`).join(' ');}
+function gearPath(r,teeth,depth=0.12){let d='';const n=teeth*4;for(let i=0;i<=n;i++){const a=i/n*Math.PI*2;const k=i%4;const rr=(k===0||k===1)?r:r*(1-depth);d+=(i?'L':'M')+(Math.cos(a)*rr).toFixed(1)+' '+(Math.sin(a)*rr).toFixed(1);}return d+'Z';}
+const gearSVG=(r,teeth,sw=2,col='#c9a86a')=>`<svg width="${2*r+10}" height="${2*r+10}" viewBox="${-r-5} ${-r-5} ${2*r+10} ${2*r+10}" style="overflow:visible"><path d="${gearPath(r,teeth)}" fill="none" stroke="${col}" stroke-width="${sw}"/><circle r="${r*0.62}" fill="none" stroke="${col}" stroke-width="${sw}"/><circle r="${r*0.2}" fill="none" stroke="${col}" stroke-width="${sw}"/></svg>`;
+const corners=`<div class="corner" style="left:-34px;top:-34px;border-width:4px 0 0 4px"></div><div class="corner" style="right:-34px;top:-34px;border-width:4px 4px 0 0"></div><div class="corner" style="left:-34px;bottom:-34px;border-width:0 0 4px 4px"></div><div class="corner" style="right:-34px;bottom:-34px;border-width:0 4px 4px 0"></div>`;
+
+// ---------- content ----------
+const chapters=[
+ {t:'Construction & Structure',en:'Building strong foundations',imgs:[['civil','Civil Works'],['steelfab','Steel Fabrication'],['erection','Structure Erection']],
+  li:['Building &amp; Civil Construction','Steel Structure Fabrication','PEB Shed Erection','Industrial Flooring &amp; Drainage']},
+ {t:'Electrical & Power',en:'Powering industry',imgs:[['wiring','Industrial Wiring'],['solar','Solar Power Plant'],['gen','Generator Installation'],['panel','Distribution Panel']],
+  li:['Industrial Wiring &amp; Panels','Solar Power Plants · 5kW – 500kW','Generators · 10kVA – 2000kVA','Lightning Protection Systems']},
+ {t:'Mechanical & Utilities',en:'Keeping operations running',imgs:[['mech','Mechanical Workshop'],['boiler','Gas &amp; Electric Boiler'],['comp','Air Compressor'],['steam','Steam Line']],
+  li:['Mechanical Workshop Services','Gas &amp; Electric Boilers','Air Compressors &amp; Dryers','Air &amp; Steam Line Installation']},
+ {t:'Safety, Cooling & Security',en:'Protecting people and assets',imgs:[['fire','Fire Protection'],['acplant','AC Plant'],['cctv','CCTV Surveillance']],
+  li:['Fire Hydrant &amp; Sprinkler Systems','AC Plants · 5 – 500 Ton','CCTV Surveillance Systems','Exhaust &amp; Ventilation']},
+ {t:'Electrical Products',en:'Reliable supply',imgs:[['ups','Online UPS &amp; IPS'],['vfd','Variable Frequency Drive'],['mccb','ABB MCB &amp; MCCB'],['htcable','LT / HT Cable']],
+  li:['Online UPS &amp; IPS','VFD · 0.75kW – 500kW','ABB MCB &amp; MCCB','LT / HT Power Cables']},
+];
+const S=[];
+// 0 OPENING
+S.push({dur:4,impacts:[0.95],html:`
+ <div class="abs" data-a="spinin" data-t="0.1" data-d="1.2" data-sp="14" style="left:210px;top:370px;opacity:0">${gearSVG(320,24,2)}</div>
+ <div class="abs" data-a="spinin" data-t="0.3" data-d="1.2" data-sp="-22" style="left:690px;top:300px;opacity:0">${gearSVG(110,14,2)}</div>
+ <div class="streak" data-a="streak" data-t="0.1" data-d="0.8" style="left:0;width:1080px;top:700px"></div>
+ <div class="shock" data-a="shock" data-t="0.95" data-d="0.9" style="left:540px;top:700px"></div>
+ <img class="abs" src="img/logo.png" data-a="slam" data-t="0.5" data-d="0.45" style="left:340px;top:560px;width:400px">
+ <div class="sweepwrap" style="left:340px;top:560px;width:400px;height:280px"><div class="sweep" data-a="sweep" data-t="1.4" data-d="1.0"></div></div>
+ <div class="abs" style="left:0;right:0;top:1060px;text-align:center">
+  <div class="serif" style="font-size:80px;font-weight:700;letter-spacing:.06em">${chars('A.H.I ENGINEERING',1.15,0.035)}</div>
+  <div data-a="track" data-t="1.75" data-d="1.4" data-ls="0.62" style="font:500 30px MS;color:var(--gold);margin-top:14px;opacity:0">CORPORATION</div>
+ </div>
+ <div class="abs hairc" data-a="line" data-t="1.9" data-d="0.9" style="left:240px;width:600px;top:1270px"></div>
+ <div class="abs" style="left:0;right:0;top:1310px;text-align:center">${M('<span class="serif" style="font-style:italic;font-size:40px;color:var(--gold2)">We Build Your Trust, We Ensure Quality</span>','rise',2.3,0.9)}</div>`});
+// 1 STATEMENT
+S.push({dur:4,html:`
+ <div class="p3" data-a="panel3d" data-t="0.15" data-d="0.9"><div class="frame"></div>${corners}
+  <div class="panel"><div class="ik"><div class="im kb" style="background-image:url(img/steelfab.jpg)"></div></div><div class="shade"></div><div class="sheen" data-a="sheenx" data-t="0.7" data-d="1.1"></div></div></div>
+ <div class="abs" style="left:90px;top:1120px;right:90px">
+  ${M('<span class="label">A Decade of Expertise</span>','rise',0.45,0.7)}
+  <div style="height:26px"></div>
+  <div class="ttl" style="font-size:104px">${chars('Your Trust,',0.6,0.04)}</div>
+  <div class="ttl gold" style="font-size:104px;font-style:italic">${chars('Our Standard.',0.95,0.04)}</div>
+  <div class="hair" data-a="line" data-t="1.4" data-d="0.9" style="width:240px;margin:40px 0 34px"></div>
+  <div data-a="fade" data-t="1.6" data-d="0.8" class="addr" style="font-size:34px">Complete civil, mechanical and electrical<br>engineering solutions — under one roof.</div>
+ </div>`});
+// 2-6 CHAPTERS
+chapters.forEach((c,ci)=>{const dur=5,n=c.imgs.length,step=n===4?1.0:1.5;
+ const ims=c.imgs.map(([f,cap],k)=>`<div class="ik" ${k?`data-a="imgk" data-t="${k*step}" data-d="0.45"`:''}><div class="im kb" data-kt="${k*step}" style="background-image:url(img/${f}.jpg)"></div><div class="tagc" data-a="fade" data-t="${k*step+0.35}" data-d="0.4">${cap}</div></div>`).join('');
+ const fls=c.imgs.slice(1).map((x,k)=>`<div class="fl" data-a="flashl" data-t="${(k+1)*step}" data-d="0.3"></div>`).join('');
+ const shs=c.imgs.map((x,k)=>`<div class="sheen" data-a="sheenx" data-t="${k*step+0.3}" data-d="0.9"></div>`).join('');
+ S.push({dur,chap:ci,beats:c.imgs.slice(1).map((x,k)=>(k+1)*step),html:`
+ <div class="p3" data-a="panel3d" data-t="0.1" data-d="0.85"><div class="frame"></div>${corners}
+  <div class="panel">${ims}<div class="shade" style="pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0) 70%,rgba(5,12,30,.35))"></div>${fls}${shs}</div></div>
+ <div class="abs" style="left:90px;top:1075px;right:90px">
+  <div style="display:flex;align-items:flex-end;gap:34px">
+   <div style="position:relative;flex:none">
+    <div class="abs" data-a="spinin" data-t="0.2" data-d="0.8" data-sp="${ci%2?-30:30}" style="left:-38px;top:-48px;opacity:0">${gearSVG(130,16,1.5,'rgba(201,168,106,.35)')}</div>
+    <div class="num" data-a="fly" data-t="0.3" data-d="0.55" data-s="2.6" style="position:relative">0${ci+1}</div>
+   </div>
+   <div style="padding-bottom:22px">${M(`<span class="ttlen">${c.en}</span>`,'rise',0.5,0.7)}<div class="ttl">${chars(c.t,0.6,0.022,0.55)}</div></div>
+  </div>
+  <div class="hair" data-a="line" data-t="0.85" data-d="0.8" style="width:100%;margin:26px 0 22px"></div>
+  ${c.li.map((l,k)=>`<div class="li" data-a="slideR" data-t="${1.0+k*0.12}" data-d="0.6"><i></i>${l}</div>`).join('')}
+ </div>`});
+});
+// 7 STATS
+S.push({dur:4,ivory:1,html:`
+ <div class="ivory" data-a="diag" data-t="0" data-d="0.6"></div>
+ <div class="abs" data-a="spinin" data-t="0.3" data-d="1" data-sp="12" style="left:620px;top:1250px;opacity:0">${gearSVG(260,22,2,'rgba(13,26,51,.12)')}</div>
+ <div class="abs" style="left:110px;right:110px;top:330px;color:var(--ink)">
+  ${M('<span class="label" style="color:#9a7a3e">Why A.H.I Engineering</span>','rise',0.35,0.7)}
+  <div style="height:20px"></div>
+  ${M('<span class="ttl" style="color:var(--ink);font-size:82px">An Unwavering</span>','rise',0.45,0.8)}
+  ${M('<span class="ttl" style="color:var(--ink);font-size:82px">Commitment to <i style="color:#9a7a3e">Quality</i></span>','rise',0.6,0.8)}
+  <div style="height:50px"></div>
+  <div class="stat" data-a="slideR" data-t="0.8" data-d="0.6"><b><span data-a="count" data-t="0.8" data-d="1.1" data-v="10">0</span>+</b><span>Years of<br>Experience<small>Proven expertise</small></span><div class="bl" data-a="line" data-t="0.9" data-d="0.9"></div></div>
+  <div class="stat" data-a="slideR" data-t="1.0" data-d="0.6"><b><span data-a="count" data-t="1.0" data-d="0.9" data-v="5">0</span></b><span>Specialised<br>Divisions<small>One trusted partner</small></span><div class="bl" data-a="line" data-t="1.1" data-d="0.9"></div></div>
+  <div class="stat" data-a="slideR" data-t="1.2" data-d="0.6"><b data-a="scramble" data-t="1.2" data-d="0.8" data-v="24/7">24/7</b><span>Emergency<br>Support<small>Round-the-clock service</small></span></div>
+ </div>`});
+// 8 PRESENCE
+S.push({dur:5,html:`
+ <div class="abs" style="left:90px;right:90px;top:300px">
+  ${M('<span class="label">Our Presence</span>','rise',0.35,0.7)}<div style="height:20px"></div>
+  <div class="ttl" style="font-size:88px">${chars('Where We Operate',0.45,0.03)}</div>
+ </div>
+ <svg class="abs" style="left:0;top:0" width="1080" height="1920"><path id="arc" data-a="draw" data-t="0.9" data-d="1.4" d="M 280 780 Q 560 600 790 1120" fill="none" stroke="#c9a86a" stroke-width="3"/></svg>
+ <div class="dotg" data-a="dot" data-t="0.9" data-d="1.4"></div>
+ <div class="ring" data-a="pulse" data-t="0.8" style="left:280px;top:780px"></div><div class="node" data-a="pop" data-t="0.8" data-d="0.5" style="left:280px;top:780px"></div>
+ <div class="shock" data-a="shock" data-t="2.3" data-d="0.8" style="left:790px;top:1120px"></div>
+ <div class="ring" data-a="pulse" data-t="2.3" style="left:790px;top:1120px"></div><div class="node" data-a="pop" data-t="2.3" data-d="0.5" style="left:790px;top:1120px"></div>
+ <div class="abs" style="left:240px;top:830px">${M('<span class="city">Kushtia</span>','rise',1.0,0.7)}
+  <div class="addr" data-a="slideR" data-t="1.2" data-d="0.6"><em>BRANCH</em>Courtpara<br><em>WORKSHOP</em>Mangalbaria</div></div>
+ <div class="abs" style="right:90px;top:1170px;text-align:right">${M('<span class="city">Dhaka</span>','rise',2.35,0.7)}
+  <div class="addr" data-a="slideR" data-t="2.55" data-d="0.6"><em>HEAD OFFICE</em>Kafrul, Mirpur<br><em>WORKSHOP</em>Rupnagar, Mirpur</div></div>
+ <div class="abs" style="left:0;right:0;top:1560px;text-align:center" data-a="fade" data-t="2.9" data-d="0.8"><span class="label">Serving Clients Nationwide</span></div>`});
+// 9 CLOSING
+S.push({dur:6,impacts:[0.75],html:`
+ <div class="abs" data-a="spinin" data-t="0" data-d="1" data-sp="16" style="left:325px;top:170px;opacity:0">${gearSVG(215,20,2,'rgba(201,168,106,.45)')}</div>
+ <div class="shock" data-a="shock" data-t="0.75" data-d="0.8" style="left:540px;top:385px"></div>
+ <img class="abs" src="img/logo.png" data-a="slam" data-t="0.3" data-d="0.45" style="left:400px;top:287px;width:280px">
+ <div class="sweepwrap" style="left:400px;top:287px;width:280px;height:196px"><div class="sweep" data-a="sweep" data-t="1.0" data-d="1.0"></div></div>
+ <div class="abs" style="left:0;right:0;top:640px;text-align:center">
+  <div class="serif" style="font-size:58px;font-weight:700;letter-spacing:.06em">${chars('A.H.I ENGINEERING',0.8,0.03)}</div>
+  <div data-a="track" data-t="1.2" data-d="1.2" data-ls="0.6" style="font:500 24px MS;color:var(--gold);margin-top:10px;opacity:0">CORPORATION</div>
+ </div>
+ <div class="abs hairc" data-a="line" data-t="1.3" data-d="0.8" style="left:290px;width:500px;top:800px"></div>
+ <div class="abs" style="left:0;right:0;top:850px;text-align:center">
+  ${M('<span class="ttl" style="font-size:80px">Get in <i class="gold">Touch</i></span>','rise',1.4,0.8)}
+  <div style="height:40px"></div>
+  <div class="phone" data-a="scramble" data-t="1.6" data-d="0.9" data-v="01712-964111">01712-964111</div>
+  <div class="phone" data-a="scramble" data-t="1.8" data-d="0.9" data-v="01831-366663">01831-366663</div>
+  <div style="height:30px"></div>
+  <div data-a="fade" data-t="2.2" data-d="0.8" style="font:500 34px MS;letter-spacing:.06em;color:var(--gold2)">ahi.engcorporation@gmail.com</div>
+  <div style="height:60px"></div>
+  <div data-a="fade" data-t="2.5" data-d="0.8"><span class="label" style="font-size:22px">Proprietor</span><div class="serif" style="font-size:44px;margin-top:10px">S.M.A Asgor</div></div>
+  <div style="height:60px"></div>
+  ${M('<span class="serif" style="font-style:italic;font-size:42px;color:var(--gold2)">We Build Your Trust, We Ensure Quality</span>','rise',2.9,0.9)}
+ </div>`});
+
+// ---------- build ----------
+let acc=0;S.forEach(s=>{s.start=acc;acc+=s.dur});
+window.TOTAL=acc;window.SCENES=S.map(s=>s.start);
+const stage=document.getElementById('stage');
+S.forEach(s=>{const d=document.createElement('div');d.className='scene';d.innerHTML=s.html;stage.appendChild(d);s.el=d;
+ s.items=[...d.querySelectorAll('[data-a]')].map(e=>({e,a:e.dataset.a,t:+e.dataset.t||0,d:+e.dataset.d||0.8}));
+ s.kbs=[...d.querySelectorAll('.kb')].map(e=>({e,t:+(e.dataset.kt||0)}));
+ s.items.forEach(i=>{if(i.a==='draw')i.len=i.e.getTotalLength();});
+ const arc=d.querySelector('#arc');if(arc)s.arc=arc;
+});
+// impacts (camera shake)
+const IMP=[];S.forEach((s,i)=>{if(i>0)IMP.push([s.start+0.02,1]);(s.impacts||[]).forEach(x=>IMP.push([s.start+x,1.6]));(s.beats||[]).forEach(x=>IMP.push([s.start+x,0.5]));});
+window.IMPACTS=IMP;
+// background gears
+const G=document.getElementById('gears');
+const BG=[{x:980,y:1700,r:300,n:26,sp:6},{x:90,y:260,r:200,n:18,sp:-9},{x:1040,y:1330,r:120,n:12,sp:-15}];
+G.innerHTML=BG.map(g=>`<g transform="translate(${g.x} ${g.y})"><g class="gr"><path d="${gearPath(g.r,g.n)}" fill="none" stroke="#c9a86a" stroke-opacity=".09" stroke-width="2"/><circle r="${g.r*.62}" fill="none" stroke="#c9a86a" stroke-opacity=".07" stroke-width="2"/></g></g>`).join('');
+const GR=[...G.querySelectorAll('.gr')];
+// particles
+const cv=document.getElementById('parts'),cx=cv.getContext('2d');
+let sd=12345;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+const P=[...Array(110)].map(()=>({x:rnd()*1080,y:rnd()*1920,vy:-(20+rnd()*60),vx:(rnd()-.5)*20,r:1+rnd()*3.2,ph:rnd()*6.28,a:.25+rnd()*.6}));
+function drawParts(t,boost){cx.clearRect(0,0,1080,1920);
+ for(const p of P){const y=((p.y+p.vy*t)%1920+1920)%1920,x=((p.x+p.vx*t+Math.sin(t*.8+p.ph)*30)%1080+1080)%1080;
+  const tw=.55+.45*Math.sin(t*2.3+p.ph);const g=cx.createRadialGradient(x,y,0,x,y,p.r*4);
+  g.addColorStop(0,`rgba(240,215,160,${p.a*tw*boost})`);g.addColorStop(1,'rgba(240,215,160,0)');cx.fillStyle=g;cx.beginPath();cx.arc(x,y,p.r*4,0,6.283);cx.fill();}}
+// wipe bars
+const bars=[...document.querySelectorAll('#wipe .bar')];
+const hdr=document.getElementById('hdr'),ix=document.getElementById('ix'),prog=document.querySelector('#prog i'),flash=document.getElementById('flash'),world=document.getElementById('world');
+const hash=n=>{const x=Math.sin(n*12.9898)*43758.5453;return x-Math.floor(x)};
+
+window.render=function(t){
+ const beat=0.5, bp=(t%beat)/beat, pulse=Math.exp(-bp*6);
+ S.forEach((s,si)=>{
+  const lt=t-s.start, vis=lt>=0&&lt<s.dur;
+  s.el.style.display=vis?'block':'none'; if(!vis) return;
+  for(const it of s.items){const p=(lt-it.t)/it.d,e=it.e,q=eo(p);
+   switch(it.a){
+    case 'rise': e.style.transform=`translateY(${(1-q)*115}%)`;break;
+    case 'fade': e.style.opacity=cl(p*1.3);e.style.transform=`translateY(${(1-q)*26}px)`;break;
+    case 'char': {const k=eb(p);e.style.opacity=cl(p*2.2);e.style.transform=`translateY(${(1-k)*70}px) rotateX(${(1-q)*-85}deg) scale(${0.6+0.4*k})`;
+      const dx=(1-cl(p*1.4))*9;e.style.textShadow=dx>0.2?`${dx}px 0 rgba(255,40,90,.6),${-dx}px 0 rgba(0,210,255,.6)`:'none';break;}
+    case 'slideR': e.style.opacity=cl(p*1.8);e.style.transform=`translateX(${(1-q)*180}px) skewX(${(1-q)*-8}deg)`;break;
+    case 'line': e.style.transform=`scaleX(${eio(p)})`;e.style.transformOrigin=e.classList.contains('hairc')?'center':'left';break;
+    case 'track': e.style.opacity=cl(p*1.5);e.style.letterSpacing=`${+e.dataset.ls+0.6*(1-q)}em`;break;
+    case 'sweep': e.style.left=`${-70+170*eio(p)}%`;break;
+    case 'sheenx': e.style.left=`${-60+220*eio(p)}%`;break;
+    case 'streak': e.style.opacity=p<0?0:(p<1?1:cl(1-(p-1)*2));e.style.transform=`scaleX(${eo(p)}) scaleY(${1+3*(1-cl(p))})`;break;
+    case 'slam': {const k=cl(p);e.style.opacity=cl(p*3);e.style.transform=`scale(${3-2*Math.pow(k,2.2)}) rotate(${(1-k)*-12}deg)`;e.style.filter=k<1?`blur(${(1-k)*14}px)`:'none';
+      if(p>=1){const r=lt-it.t-it.d;e.style.transform=`scale(${1+0.06*Math.exp(-r*9)*Math.cos(r*30)})`;}break;}
+    case 'shock': e.style.opacity=p<0||p>1?0:(1-p)*0.9;e.style.transform=`scale(${0.2+6*eo(p)})`;e.style.borderWidth=`${6*(1-cl(p))+1}px`;break;
+    case 'spinin': {const sp=+e.dataset.sp;e.style.opacity=cl(p)*(e.style.cssText.includes('rgba')?1:0.22)+'';e.style.opacity=cl(p);e.style.transform=`rotate(${lt*sp+(1-q)*sp*4}deg) scale(${0.7+0.3*q})`;break;}
+    case 'fly': {const s0=+e.dataset.s;e.style.opacity=cl(p*2);e.style.transform=`scale(${s0-(s0-1)*eo(p)}) translateY(${(1-q)*-40}px)`;e.style.filter=p<1?`blur(${(1-cl(p))*10}px)`:'none';break;}
+    case 'panel3d': {const k=eo(p);const bump=lt>it.t+it.d?1+0.012*pulse:1;
+      e.style.opacity=cl(p*2);e.style.transform=`perspective(1800px) translateZ(${(1-k)*-500}px) rotateY(${(1-k)*(si%2?38:-38)}deg) rotateX(${(1-k)*8}deg) scale(${bump})`;break;}
+    case 'imgk': {const k=eio(p);const x0=(1-k)*125,x1=x0-25;e.style.clipPath=`polygon(${x0}% 0,100% 0,100% 100%,${x1}% 100%)`;break;}
+    case 'flashl': e.style.opacity=p<0||p>1?0:0.55*(1-p);break;
+    case 'diag': {const k=eio(p);const x0=(1-k)*140-20;e.style.clipPath=`polygon(${x0}% 0,120% 0,120% 100%,${x0-30}% 100%)`;break;}
+    case 'draw': e.style.strokeDasharray=`${it.len}`;e.style.strokeDashoffset=it.len*(1-eio(p));break;
+    case 'dot': {if(!s.arc)break;const L=s.arc.getTotalLength(),pt=s.arc.getPointAtLength(L*eio(p));e.style.left=pt.x+'px';e.style.top=pt.y+'px';e.style.opacity=p<0?0:(p<1?1:cl(1-(p-1)*2));break;}
+    case 'count': e.textContent=Math.round(+e.dataset.v*eio(p));break;
+    case 'scramble': {const v=e.dataset.v;const k=cl(p);const nrev=Math.floor(k*v.length);const fr=Math.floor(lt*24);
+      e.textContent=p<0?'':[...v].map((c,i)=>i<nrev||!/\d/.test(c)?c:String(Math.floor(hash(fr*31+i)*10))).join('');e.style.opacity=cl(p*4);break;}
+    case 'pulse': {const f=((lt-it.t)*0.8)%1;e.style.opacity=lt<it.t?0:(1-f);e.style.transform=`scale(${1+f*3.5})`;break;}
+    case 'pop': e.style.opacity=cl(p*2);e.style.transform=`scale(${eb(p)})`;break;
+   }
+  }
+  for(const k of s.kbs){const kt=cl((lt-k.t)/(s.dur));const z=k.t>0?eo((lt-k.t)/0.6):1;k.e.style.transform=`scale(${(1.3-0.24*z)+0.08*kt}) translateX(${(si%2?1:-1)*(2-4*kt)}%)`;}
+ });
+ // wipe transition at each cut
+ let wx=null;for(let i=1;i<S.length;i++){const u=(t-(S[i].start-0.34))/0.68;if(u>=0&&u<=1){wx=u;break;}}
+ bars.forEach((b,k)=>{if(wx===null){b.style.display='none';return;}b.style.display=k===2?'flex':'block';
+  const u=cl(wx+(1-k)*0.07);const x=120-240*eio(u);b.style.transform=`translateX(${x}%) skewX(-14deg)`;});
+ // camera shake + flash
+ let sh=0,fl=0;for(const [ti,a] of IMP){const r=t-ti;if(r>=0&&r<0.6){sh+=a*Math.exp(-r*9);fl=Math.max(fl,(a>1?0.45:a>0.6?0.18:0)*Math.exp(-r*14));}}
+ world.style.transform=`translate(${Math.sin(t*93)*14*sh}px,${Math.cos(t*71)*12*sh}px) rotate(${Math.sin(t*57)*0.5*sh}deg) scale(${1+0.02*sh})`;
+ flash.style.opacity=fl;
+ // background motion
+ GR.forEach((g,i)=>g.setAttribute('transform',`rotate(${t*BG[i].sp})`));
+ document.getElementById('bggrid').style.transform=`translate(${(t*12)%60}px,${(t*-20)%60}px)`;
+ drawParts(t,1+1.5*sh);
+ // header/progress
+ const hA=S[1].start+0.5,hB=S[9].start;
+ hdr.style.opacity=cl((t-hA)/0.5)*(1-cl((t-hB+0.3)/0.3));
+ const iv=S[7];hdr.style.filter=(t>=iv.start+0.3&&t<iv.start+iv.dur)?'invert(1) hue-rotate(180deg)':'';
+ const cur=S.findIndex(s=>t>=s.start&&t<s.start+s.dur);
+ ix.textContent=S[cur]&&S[cur].chap!==undefined?`0${S[cur].chap+1} — 05`:'';
+ prog.style.width=cl(t/TOTAL)*100+'%';
+ document.getElementById('grain').style.transform=`translate(${(Math.floor(t*24)*37)%100}px,${(Math.floor(t*24)*61)%100}px)`;
+};
+render(0);
+</script></body></html>
