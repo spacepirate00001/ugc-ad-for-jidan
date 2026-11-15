@@ -1,0 +1,221 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:PF;font-weight:500;src:url(fonts/playfair-display-latin-500-normal.woff2)}
+@font-face{font-family:PF;font-weight:700;src:url(fonts/playfair-display-latin-700-normal.woff2)}
+@font-face{font-family:PF;font-weight:500;font-style:italic;src:url(fonts/playfair-display-latin-500-italic.woff2)}
+@font-face{font-family:NSB;font-weight:500;src:url(fonts/noto-serif-bengali-bengali-500-normal.woff2)}
+@font-face{font-family:NSB;font-weight:700;src:url(fonts/noto-serif-bengali-bengali-700-normal.woff2)}
+@font-face{font-family:MS;font-weight:400;src:url(fonts/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:MS;font-weight:500;src:url(fonts/montserrat-latin-500-normal.woff2)}
+@font-face{font-family:MS;font-weight:600;src:url(fonts/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:HB;font-weight:600;src:url(fonts/hind-siliguri-bengali-600-normal.woff2)}
+@font-face{font-family:HB;font-weight:700;src:url(fonts/hind-siliguri-bengali-700-normal.woff2)}
+:root{--navy:#0a1428;--navy2:#13244a;--gold:#c9a86a;--gold2:#e6cf9c;--ivory:#f4efe5;--ink:#0d1a33}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy)}
+body{font-family:MS,HB,sans-serif;color:var(--ivory)}
+.abs{position:absolute}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 38%,#1a3266 0%,#0f1f42 45%,#08112a 100%)}
+#bggrid{position:absolute;inset:0;opacity:.05;background-image:linear-gradient(#9cc3ff 1px,transparent 1px),linear-gradient(90deg,#9cc3ff 1px,transparent 1px);background-size:60px 60px}
+#grain{position:absolute;inset:-100px;background:url(img/grain.png);z-index:50;pointer-events:none;mix-blend-mode:overlay;opacity:.55}
+#vig{position:absolute;inset:0;z-index:49;box-shadow:inset 0 0 260px rgba(0,0,0,.6);pointer-events:none}
+.scene{position:absolute;inset:0;display:none}
+.serif{font-family:PF,NSB,serif}
+.label{font-family:MS,HB;font-weight:500;font-size:26px;letter-spacing:.42em;color:var(--gold);text-transform:uppercase}
+.mask{overflow:hidden;display:block;padding:0 4px}
+.mask>*{display:block}
+.gold{color:var(--gold)}
+.label.bn{font-family:HB;font-weight:600;letter-spacing:.04em;font-size:32px}
+.hair{height:2px;background:linear-gradient(90deg,var(--gold),rgba(201,168,106,.15))}
+.hairc{height:2px;background:linear-gradient(90deg,rgba(201,168,106,0),var(--gold),rgba(201,168,106,0));transform-origin:center}
+.panel{position:absolute;left:90px;top:390px;width:900px;height:620px;overflow:hidden;background:#000}
+.frame{position:absolute;left:66px;top:366px;width:948px;height:668px;border:2px solid var(--gold)}
+.panel .im{position:absolute;inset:0;background-size:cover;background-position:center}
+.panel .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 60%,rgba(5,12,30,.55))}
+.tagc{position:absolute;left:90px;top:960px;background:var(--navy);color:var(--gold2);font:500 22px MS;letter-spacing:.3em;text-transform:uppercase;padding:12px 22px}
+.num{font-family:PF;font-weight:700;font-size:180px;line-height:1;color:transparent;-webkit-text-stroke:2px var(--gold)}
+.ttl{font-family:NSB,serif;font-weight:700;font-size:62px;line-height:1.3;color:var(--ivory)}
+.ttlen{font-family:PF;font-style:italic;font-weight:500;font-size:34px;color:var(--gold2);letter-spacing:.02em}
+.li{font-family:HB;font-weight:600;font-size:42px;color:rgba(244,239,229,.88);display:flex;align-items:center;gap:22px;height:72px}
+.li i{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);flex:none}
+#hdr{position:absolute;top:110px;left:90px;right:90px;display:flex;align-items:center;justify-content:space-between;z-index:20;opacity:0}
+#hdr img{height:56px}
+#hdr .nm{font:600 22px MS;letter-spacing:.32em;color:var(--ivory);margin-left:20px}
+#hdr .ix{font:500 24px MS;letter-spacing:.3em;color:var(--gold)}
+#prog{position:absolute;left:90px;right:90px;bottom:110px;height:2px;background:rgba(201,168,106,.2);z-index:20}
+#prog i{display:block;height:100%;width:0;background:var(--gold)}
+.ivory{position:absolute;inset:0;background:var(--ivory)}
+.stat{display:flex;align-items:baseline;gap:34px;border-bottom:2px solid rgba(13,26,51,.15);padding:34px 0}
+.stat b{font-family:NSB,PF;font-weight:700;font-size:150px;color:var(--ink);line-height:1;min-width:330px}
+.stat>span{font-family:NSB;font-weight:500;font-size:48px;color:var(--ink);line-height:1.35}
+.stat>span small{display:block;font:500 22px MS;letter-spacing:.3em;color:#9a7a3e;text-transform:uppercase;margin-top:8px}
+.node{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--gold);box-shadow:0 0 30px var(--gold)}
+.ring{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2px solid var(--gold)}
+.city{font-family:NSB;font-weight:700;font-size:64px;line-height:1.2}
+.addr{font-family:HB;font-weight:600;font-size:34px;color:rgba(244,239,229,.8);line-height:1.6}
+.addr em{font-style:normal;color:var(--gold);font-family:MS;font-weight:500;font-size:22px;letter-spacing:.28em;margin-right:14px}
+.phone{font:600 74px MS;letter-spacing:.06em;color:var(--ivory)}
+.sweepwrap{position:absolute;-webkit-mask-image:url(img/logo.png);-webkit-mask-size:100% 100%;overflow:hidden}
+.sweep{position:absolute;top:0;bottom:0;width:60%;background:linear-gradient(100deg,transparent 20%,rgba(255,236,190,.95) 50%,transparent 80%)}
+</style></head>
+<body>
+<div id="bg"></div><div id="bggrid"></div>
+<div id="stage"></div>
+<div id="hdr"><div style="display:flex;align-items:center"><img src="img/logo.png"><span class="nm">A.H.I ENGINEERING</span></div><span class="ix" id="ix"></span></div>
+<div id="prog"><i></i></div>
+<div id="vig"></div><div id="grain"></div>
+<script>
+const BN=n=>String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
+const M=(inner,a,t,d,extra='')=>`<span class="mask" ${extra}><span data-a="${a}" data-t="${t}" data-d="${d||0.9}">${inner}</span></span>`;
+const chapters=[
+ {t:'নির্মাণ ও স্ট্রাকচার',en:'Construction & Structure',imgs:[['civil','Civil Works'],['steelfab','Steel Fabrication'],['erection','Structure Erection']],
+  li:['বিল্ডিং ও সিভিল কনস্ট্রাকশন','স্টিল স্ট্রাকচার ফ্যাব্রিকেশন','PEB শেড ও ইরেকশন','ইন্ডাস্ট্রিয়াল ফ্লোরিং ও ড্রেনেজ']},
+ {t:'ইলেকট্রিক্যাল ও পাওয়ার',en:'Electrical & Power',imgs:[['wiring','Industrial Wiring'],['solar','Solar Power Plant'],['gen','Generator Installation'],['panel','Distribution Panel']],
+  li:['ইন্ডাস্ট্রিয়াল ওয়্যারিং ও প্যানেল','সোলার প্ল্যান্ট 5kW – 500kW','জেনারেটর 10kVA – 2000kVA','লাইটনিং প্রোটেকশন সিস্টেম']},
+ {t:'মেকানিক্যাল ও ইউটিলিটি',en:'Mechanical & Utilities',imgs:[['mech','Mechanical Workshop'],['boiler','Gas & Electric Boiler'],['comp','Air Compressor'],['steam','Steam Line']],
+  li:['মেকানিক্যাল ওয়ার্কশপ','গ্যাস ও ইলেকট্রিক বয়লার','এয়ার কম্প্রেসর ও ড্রায়ার','এয়ার লাইন ও স্টিম লাইন']},
+ {t:'সেফটি, কুলিং ও সিকিউরিটি',en:'Safety, Cooling & Security',imgs:[['fire','Fire Protection'],['acplant','AC Plant'],['cctv','CCTV Surveillance']],
+  li:['ফায়ার হাইড্রেন্ট ও স্প্রিংকলার','এসি প্ল্যান্ট 5 – 500 টন','সিসিটিভি সার্ভেইল্যান্স','এক্সজস্ট ও ভেন্টিলেশন']},
+ {t:'ইলেকট্রিক্যাল প্রোডাক্ট',en:'Electrical Products Supply',imgs:[['ups','Online UPS & IPS'],['vfd','Variable Frequency Drive'],['mccb','ABB MCB & MCCB'],['htcable','LT / HT Cable']],
+  li:['অনলাইন UPS ও IPS','VFD 0.75kW – 500kW','ABB MCB ও MCCB','LT / HT ক্যাবল']},
+];
+const S=[];
+// 0 Opening
+S.push({dur:4.6,html:`
+ <div class="abs hairc" data-a="line" data-t="0.15" data-d="1.4" style="left:240px;width:600px;top:1040px"></div>
+ <img class="abs" src="img/logo.png" data-a="scale" data-t="0.45" data-d="1.4" style="left:340px;top:560px;width:400px">
+ <div class="sweepwrap" style="left:340px;top:560px;width:400px;height:280px"><div class="sweep" data-a="sweep" data-t="1.3" data-d="1.3"></div></div>
+ <div class="abs" style="left:0;right:0;top:1080px;text-align:center">
+  <div data-a="track" data-t="1.0" data-d="1.8" data-ls="0.08" class="serif" style="font-size:78px;font-weight:700;opacity:0">A.H.I ENGINEERING</div>
+  <div data-a="track" data-t="1.35" data-d="1.8" data-ls="0.62" style="font:500 30px MS;color:var(--gold);margin-top:14px;opacity:0">CORPORATION</div>
+ </div>
+ <div class="abs" style="left:0;right:0;top:1300px;text-align:center">${M('<span class="serif" style="font-style:italic;font-size:40px;color:var(--gold2)">We Build Your Trust, We Ensure Quality</span>','rise',2.1,1.1)}</div>`});
+// 1 Statement
+S.push({dur:4.8,html:`
+ <div class="frame" data-a="fade" data-t="0.5" data-d="1"></div>
+ <div class="panel" data-a="wipe" data-t="0.1" data-d="1.2"><div class="im kb" style="background-image:url(img/steelfab.jpg)"></div><div class="shade"></div></div>
+ <div class="abs" style="left:90px;top:1120px;right:90px">
+  ${M('<span class="label bn">এক দশকের অভিজ্ঞতা</span>','rise',0.6,0.9)}
+  <div style="height:26px"></div>
+  ${M('<span class="ttl" style="font-size:96px">আপনার আস্থা,</span>','rise',0.8,1)}
+  ${M('<span class="ttl gold" style="font-size:96px">আমাদের মান।</span>','rise',1.0,1)}
+  <div class="hair" data-a="line" data-t="1.4" data-d="1.2" style="width:240px;margin:40px 0 34px"></div>
+  <div data-a="fade" data-t="1.7" data-d="1" class="addr" style="font-size:38px;line-height:1.55">সিভিল, মেকানিক্যাল ও ইলেকট্রিক্যাল —<br>সম্পূর্ণ ইঞ্জিনিয়ারিং সমাধান এক ছাদের নিচে।</div>
+ </div>`});
+// 2-6 chapters
+chapters.forEach((c,ci)=>{const dur=5.6,n=c.imgs.length,step=(dur-0.6)/n;
+ const ims=c.imgs.map(([f,cap],k)=>`<div class="abs" style="inset:0" data-a="${k?'wipe':'fade'}" data-t="${k?k*step:0}" data-d="${k?1.0:0.6}"><div class="im kb" data-kt="${k*step}" style="background-image:url(img/${f}.jpg)"></div><div class="shade"></div></div>`).join('');
+ const caps=c.imgs.map(([f,cap],k)=>`<div class="tagc" data-a="fade" data-t="${k*step+0.5}" data-d="0.5" ${k<n-1?`data-u="${(k+1)*step+0.2}"`:''}>${cap}</div>`).join('');
+ S.push({dur,chap:ci,html:`
+ <div class="frame" data-a="fade" data-t="0.3" data-d="1"></div>
+ <div class="panel" data-a="wipe" data-t="0" data-d="1.1">${ims}</div>${caps}
+ <div class="abs" style="left:90px;top:1075px;right:90px">
+  <div style="display:flex;align-items:flex-end;gap:34px">
+   <div class="mask" style="flex:none"><div class="num" data-a="rise" data-t="0.3" data-d="1.1">0${ci+1}</div></div>
+   <div style="padding-bottom:22px">${M(`<span class="ttlen">${c.en}</span>`,'rise',0.5,0.9)}${M(`<span class="ttl">${c.t}</span>`,'rise',0.6,1)}</div>
+  </div>
+  <div class="hair" data-a="line" data-t="0.8" data-d="1.2" style="width:100%;margin:26px 0 22px"></div>
+  ${c.li.map((l,k)=>`<div class="li" data-a="fade" data-t="${1.0+k*0.18}" data-d="0.8"><i></i>${l}</div>`).join('')}
+ </div>`});
+});
+// 7 Stats (ivory)
+S.push({dur:4.6,ivory:1,html:`
+ <div class="ivory" data-a="wipeup" data-t="0" data-d="0.9"></div>
+ <div class="abs" style="left:110px;right:110px;top:330px;color:var(--ink)">
+  ${M('<span class="label bn" style="color:#9a7a3e">কেন A.H.I ইঞ্জিনিয়ারিং</span>','rise',0.5,0.9)}
+  <div style="height:20px"></div>
+  ${M('<span class="ttl" style="color:var(--ink);font-size:80px">মানের প্রতি<br>অটল প্রতিশ্রুতি</span>','rise',0.65,1)}
+  <div style="height:50px"></div>
+  <div class="stat" data-a="fade" data-t="0.9" data-d="0.8"><b><span data-a="count" data-t="0.9" data-d="1.4" data-v="10">০</span>+</b><span>বছরের অভিজ্ঞতা<small>Years of Expertise</small></span></div>
+  <div class="stat" data-a="fade" data-t="1.1" data-d="0.8"><b><span data-a="count" data-t="1.1" data-d="1.2" data-v="5">০</span></b><span>বিশেষায়িত বিভাগ<small>Specialised Divisions</small></span></div>
+  <div class="stat" data-a="fade" data-t="1.3" data-d="0.8" style="border:0"><b>২৪/৭</b><span>ইমার্জেন্সি সাপোর্ট<small>Round-the-clock Service</small></span></div>
+ </div>`});
+// 8 Presence
+S.push({dur:5,html:`
+ <div class="abs" style="left:90px;right:90px;top:300px">
+  ${M('<span class="label">Our Presence</span>','rise',0.3,0.9)}<div style="height:20px"></div>
+  ${M('<span class="ttl" style="font-size:84px">আমাদের উপস্থিতি</span>','rise',0.45,1)}
+ </div>
+ <svg class="abs" style="left:0;top:0" width="1080" height="1920"><path data-a="draw" data-t="0.9" data-d="1.6" d="M 280 780 Q 560 600 790 1120" fill="none" stroke="#c9a86a" stroke-width="2.5" stroke-dasharray="8 10"/></svg>
+ <div class="ring" data-a="pulse" data-t="0.8" style="left:280px;top:780px"></div><div class="node" data-a="scale" data-t="0.8" data-d="0.6" style="left:280px;top:780px"></div>
+ <div class="ring" data-a="pulse" data-t="2.0" style="left:790px;top:1120px"></div><div class="node" data-a="scale" data-t="2.0" data-d="0.6" style="left:790px;top:1120px"></div>
+ <div class="abs" style="left:240px;top:830px">${M('<span class="city">কুষ্টিয়া</span>','rise',1.0,0.9)}
+  <div class="addr" data-a="fade" data-t="1.25" data-d="0.8"><em>BRANCH</em>কোর্টপাড়া, কুষ্টিয়া<br><em>WORKSHOP</em>মঙ্গলবাড়িয়া, কুষ্টিয়া</div></div>
+ <div class="abs" style="right:90px;top:1170px;text-align:right">${M('<span class="city">ঢাকা</span>','rise',2.1,0.9)}
+  <div class="addr" data-a="fade" data-t="2.35" data-d="0.8"><em>HEAD OFFICE</em>কাফরুল, মিরপুর<br><em>WORKSHOP</em>রূপনগর, মিরপুর</div></div>
+ <div class="abs" style="left:0;right:0;top:1560px;text-align:center" data-a="fade" data-t="2.8" data-d="1"><span class="label bn" style="font-size:36px">সারা দেশে সার্ভিস</span></div>`});
+// 9 Closing
+S.push({dur:7,html:`
+ <img class="abs" src="img/logo.png" data-a="scale" data-t="0.2" data-d="1.3" style="left:400px;top:280px;width:280px">
+ <div class="sweepwrap" style="left:400px;top:280px;width:280px;height:196px"><div class="sweep" data-a="sweep" data-t="0.9" data-d="1.2"></div></div>
+ <div class="abs" style="left:0;right:0;top:530px;text-align:center">
+  <div data-a="track" data-t="0.5" data-d="1.6" data-ls="0.08" class="serif" style="font-size:58px;font-weight:700;opacity:0">A.H.I ENGINEERING</div>
+  <div data-a="track" data-t="0.7" data-d="1.6" data-ls="0.6" style="font:500 24px MS;color:var(--gold);margin-top:10px;opacity:0">CORPORATION</div>
+ </div>
+ <div class="abs hairc" data-a="line" data-t="0.9" data-d="1.2" style="left:290px;width:500px;top:700px"></div>
+ <div class="abs" style="left:0;right:0;top:760px;text-align:center">
+  ${M('<span class="ttl" style="font-size:72px">যোগাযোগ করুন</span>','rise',1.1,1)}
+  <div style="height:40px"></div>
+  ${M('<span class="phone">01712-964111</span>','rise',1.35,1)}
+  ${M('<span class="phone">01831-366663</span>','rise',1.5,1)}
+  <div style="height:30px"></div>
+  <div data-a="fade" data-t="1.9" data-d="1" style="font:500 34px MS;letter-spacing:.06em;color:var(--gold2)">ahi.engcorporation@gmail.com</div>
+  <div style="height:70px"></div>
+  <div data-a="fade" data-t="2.3" data-d="1"><span class="label" style="font-size:22px">Proprietor</span><div class="serif" style="font-size:44px;margin-top:10px">S.M.A Asgor</div></div>
+  <div style="height:70px"></div>
+  ${M('<span class="serif" style="font-style:italic;font-size:42px;color:var(--gold2)">We Build Your Trust, We Ensure Quality</span>','rise',2.7,1.1)}
+ </div>`});
+
+let acc=0;S.forEach(s=>{s.start=acc;acc+=s.dur});
+window.TOTAL=acc;window.SCENES=S.map(s=>s.start);
+const stage=document.getElementById('stage');
+S.forEach(s=>{const d=document.createElement('div');d.className='scene';d.innerHTML=s.html;stage.appendChild(d);s.el=d;
+ s.items=[...d.querySelectorAll('[data-a]')].map(e=>({e,a:e.dataset.a,t:+e.dataset.t||0,d:+e.dataset.d||0.9,u:e.dataset.u?+e.dataset.u:null}));
+ s.kbs=[...d.querySelectorAll('.kb')].map(e=>({e,t:+(e.dataset.kt||0)}));
+ s.items.filter(i=>i.a==='draw').forEach(i=>{i.len=i.e.getTotalLength();});
+});
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const eo=x=>{x=cl(x);return x===1?1:1-Math.pow(2,-10*x)};       // expo out
+const eio=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}; // cubic in-out
+const hdr=document.getElementById('hdr'),ix=document.getElementById('ix'),prog=document.querySelector('#prog i');
+const OUT=0.5;
+window.render=function(t){
+ S.forEach((s,si)=>{
+  const lt=t-s.start, vis=lt>=0&&lt<s.dur+(si<S.length-1?OUT:0);
+  s.el.style.display=vis?'block':'none'; if(!vis) return;
+  const op=eio((lt-s.dur)/OUT);
+  s.el.style.opacity=s.ivory?1:1-op; s.el.style.transform=s.ivory?'':`translateY(${-36*op}px)`;
+  s.el.style.zIndex=si;
+  for(const it of s.items){const p=(lt-it.t)/it.d,e=it.e,q=eo(p);
+   let o=1;
+   switch(it.a){
+    case 'rise': e.style.transform=`translateY(${(1-q)*115}%)`;break;
+    case 'fade': o=cl(p*1.3);e.style.transform=`translateY(${(1-q)*26}px)`;break;
+    case 'wipe': e.style.clipPath=`inset(0 0 0 ${(1-eio(p))*100}%)`;break;
+    case 'wipeup': {const out=s.ivory?eio((lt-s.dur+0.1)/0.7):0;e.style.clipPath=`inset(${(1-eio(p))*100}% 0 ${out*100}% 0)`;break;}
+    case 'line': e.style.transform=`scaleX(${eio(p)})`;e.style.transformOrigin=e.classList.contains('hairc')?'center':'left';break;
+    case 'scale': o=cl(p*1.4);e.style.transform=`scale(${0.9+0.1*q})`;break;
+    case 'track': o=cl(p*1.5);e.style.letterSpacing=`${+e.dataset.ls+0.5*(1-q)}em`;break;
+    case 'sweep': e.style.left=`${-70+170*eio(p)}%`;break;
+    case 'draw': e.style.strokeDasharray=`${it.len}`;e.style.strokeDashoffset=it.len*(1-eio(p));break;
+    case 'count': e.textContent=BN(Math.round(+e.dataset.v*eio(p)));break;
+    case 'pulse': {const f=((lt-it.t)*0.7)%1; o=lt<it.t?0:(1-f);e.style.transform=`scale(${1+f*3.2})`;break;}
+   }
+   if(it.u!==null) o*=1-cl((lt-it.u)/0.3);
+   if(it.a!=='rise'&&it.a!=='wipe'&&it.a!=='wipeup'&&it.a!=='line'&&it.a!=='sweep'&&it.a!=='draw'&&it.a!=='count') e.style.opacity=o;
+  }
+  for(const k of s.kbs){const kt=cl((lt-k.t)/(s.dur+0.5));k.e.style.transform=`scale(${1.04+0.1*kt}) translateX(${(si%2?1:-1)*(1.5-3*kt)}%)`;}
+ });
+ // header + progress (scenes 1..8)
+ const hA=S[1].start+0.6,hB=S[9].start;
+ hdr.style.opacity=cl((t-hA)/0.6)*(1-cl((t-hB+0.2)/0.5));
+ const ivs=S[7],onIv=t>=ivs.start+0.4&&t<ivs.start+ivs.dur-0.2;
+ hdr.style.filter=onIv?'invert(1) hue-rotate(180deg)':'';
+ const cur=S.findIndex(s=>t>=s.start&&t<s.start+s.dur);
+ ix.textContent=S[cur]&&S[cur].chap!==undefined?`0${S[cur].chap+1} — 05`:'';
+ prog.style.width=cl(t/TOTAL)*100+'%';
+ document.getElementById('grain').style.transform=`translate(${(Math.floor(t*24)*37)%100}px,${(Math.floor(t*24)*61)%100}px)`;
+};
+render(0);
+</script></body></html>
